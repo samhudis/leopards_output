@@ -47,16 +47,22 @@ def format_columns(ws):
     origin_exit_col = header['Origin Firm/ Exit Firm']
     for row in ws.iter_rows(min_row=2):
         firm_cell = row[firm_col-1]
-        firm_cell.value = firm_cell.value.split()[0].strip(',').strip()
+        if len(firm_cell.value.split()) > 1:
+            firm_cell.value = ' '.join([word.strip(',').strip() for word in \
+                                firm_cell.value.replace('&',' ').split()][:2])
         origin_exit_cell = row[origin_exit_col-1]
         if origin_exit_cell.value:
             origin_exit_cell.value = origin_exit_cell.value.split()[0].strip(',').strip()
         bio_cell = row[bio_col-1]
         if bio_cell.hyperlink:
+            url = bio_cell.hyperlink.target
             bio_cell.value = 'Bio'
+            bio_cell.hyperlink = url
         linkedin_cell = row[linkedin_col-1]
         if linkedin_cell.hyperlink:
+            url = linkedin_cell.hyperlink.target
             linkedin_cell.value = 'LinkedIn'
+            linkedin_cell.hyperlink = url
         loc_cell = row[loc_col-1]
         for key, val in LOCATION_SHORTHANDS.items():
             loc_cell.value = loc_cell.value.replace(key, val)
