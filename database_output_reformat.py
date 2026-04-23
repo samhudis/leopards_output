@@ -1,12 +1,29 @@
 import os
 import openpyxl
 
+print(os.getcwd())
+HOME_DIR = os.path.join(os.getcwd(), 'Desktop', 'leopards_output')
+LOCATION_SHORTHANDS = {
+    'Washington, District of Columbia': 'DC',
+    'New York, New York': 'NY',
+    'Washington, DC': 'DC',
+    'Chicago, Illinois': 'CHI',
+    'Silicon Valley': 'SV',
+    'Palo Alto, California': 'PA',
+    'San Francisco, California': 'SF',
+    'Los Angeles, California': 'LA',
+    'Seattle, Washington': 'WA',
+    'San Diego, California': 'SD',
+    'London, England': 'UK',
+    'Boston, Massachusetts': 'BOS',
+    'Philadelphia, Pennsylvania': 'PHL'
+    }
 
 def get_workbooks() -> list[str]:
     workbooks = []
-    for file in os.listdir():
+    for file in os.listdir(HOME_DIR):
         if file.endswith('.xlsx') and not file.startswith('FORMATTED_'):
-            workbooks.append(file)
+            workbooks.append(os.path.join(os.getcwd(), HOME_DIR, file))
     return workbooks
 
 
@@ -41,7 +58,8 @@ def format_columns(ws):
         if linkedin_cell.hyperlink:
             linkedin_cell.value = 'LinkedIn'
         loc_cell = row[loc_col-1]
-        loc_cell.value = loc_cell.value.replace('District of Columbia', 'DC')
+        for key, val in LOCATION_SHORTHANDS.items():
+            loc_cell.value = loc_cell.value.replace(key, val)
 
 
 def set_print_setup(ws):
@@ -100,7 +118,8 @@ def open_workbook(workbook_file: str):
 
         set_print_setup(ws)
 
-    wb.save(f'FORMATTED_{workbook_file}')
+    file_path, file = os.path.split(workbook_file)
+    wb.save(os.path.join(file_path, f'FORMATTED_{file}'))
 
 
 def main():
